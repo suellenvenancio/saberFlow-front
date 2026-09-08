@@ -5,7 +5,7 @@ import { UserAnswerRequest, UserAnswerResponse } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class UserAnswerService {
-  private readonly url = 'http://localhost:8080/api/user-answers';
+  private readonly url = 'https://saberflow-api.onrender.com/api/user-answers';
 
   constructor(private http: HttpClient) {}
 

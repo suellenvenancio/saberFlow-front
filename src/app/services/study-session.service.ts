@@ -5,7 +5,8 @@ import { StudySessionRequest, StudySessionResponse } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class StudySessionService {
-  private readonly url = 'http://localhost:8080/api/study-sessions';
+  private readonly url =
+    'https://saberflow-api.onrender.com/api/study-sessions';
 
   constructor(private http: HttpClient) {}
 

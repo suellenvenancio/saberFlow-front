@@ -5,7 +5,7 @@ import { LanguageRequest, LanguageResponse } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class LanguageService {
-  private readonly url = 'http://localhost:8080/api/languages';
+  private readonly url = 'https://saberflow-api.onrender.com/api/languages';
 
   constructor(private http: HttpClient) {}
 

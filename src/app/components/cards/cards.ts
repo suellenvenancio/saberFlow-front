@@ -354,7 +354,10 @@ export class CardsComponent {
               this.cardService.findByFilter({
                 languageId,
                 categoryIds: [categoryId],
-                size: 10,
+                size:
+                  INTENSITY_DEFINITIONS.find(
+                    (i) => i.id === this.selectedIntensityId(),
+                  )?.targetAmount ?? 20,
               }),
             ),
           ).pipe(

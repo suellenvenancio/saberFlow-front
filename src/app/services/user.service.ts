@@ -5,7 +5,7 @@ import { UserRequest, UserResponse } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private readonly url = 'http://localhost:8080/api/users';
+  private readonly url = 'https://saberflow-api.onrender.com/api/users';
 
   constructor(private http: HttpClient) {}
 

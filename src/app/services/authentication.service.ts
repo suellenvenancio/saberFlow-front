@@ -5,7 +5,7 @@ import { LoginRequest, TokenResponse } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
-  private readonly url = 'http://localhost:8080/api/auth';
+  private readonly url = 'https://saberflow-api.onrender.com/api/auth';
   private readonly tokenKey = 'saberflow.token';
   private readonly userIdKey = 'saberflow.userId';
 

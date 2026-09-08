@@ -5,7 +5,7 @@ import { CategoryRequest, CategoryResponse } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
-  private readonly url = 'http://localhost:8080/api/categories';
+  private readonly url = 'https://saberflow-api.onrender.com/api/categories';
 
   constructor(private http: HttpClient) {}
 

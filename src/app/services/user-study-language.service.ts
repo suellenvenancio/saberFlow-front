@@ -5,7 +5,8 @@ import { UserStudyLanguageRequest, UserStudyLanguageResponse } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class UserStudyLanguageService {
-  private readonly url = 'http://localhost:8080/api/user-study-languages';
+  private readonly url =
+    'https://saberflow-api.onrender.com/api/user-study-languages';
 
   constructor(private http: HttpClient) {}
 

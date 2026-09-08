@@ -5,7 +5,8 @@ import { QuestionShortAnswerResponse } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class QuestionShortAnswerService {
-  private readonly url = 'http://localhost:8080/api/question-short-answers';
+  private readonly url =
+    'https://saberflow-api.onrender.com/api/question-short-answers';
 
   constructor(private http: HttpClient) {}
 

@@ -5,7 +5,7 @@ import { OptionRequest, OptionResponse } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class OptionService {
-  private readonly url = 'http://localhost:8080/api/options';
+  private readonly url = 'https://saberflow-api.onrender.com/api/options';
 
   constructor(private http: HttpClient) {}
 

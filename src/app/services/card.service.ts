@@ -12,7 +12,7 @@ export interface CardFilter {
 
 @Injectable({ providedIn: 'root' })
 export class CardService {
-  private readonly url = 'http://localhost:8080/api/cards';
+  private readonly url = 'https://saberflow-api.onrender.com/api/cards';
 
   constructor(private http: HttpClient) {}
 
