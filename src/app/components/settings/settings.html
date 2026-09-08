@@ -1,0 +1,51 @@
+<main class="flex min-h-screen bg-[var(--tf-background)] text-[var(--tf-text-primary)]">
+  <app-sidebar />
+
+  <div class="mx-auto max-w-5xl flex-1 px-8 py-10">
+    <p class="text-sm text-[var(--tf-text-secondary)]">Configurações</p>
+    <h1 class="mt-1 text-4xl font-bold">Escolha seu curso</h1>
+    <p class="mt-2 text-[var(--tf-text-secondary)]">Escolha o idioma que deseja estudar agora.</p>
+
+    @if (loading()) {
+      <p class="mt-10 text-[var(--tf-text-secondary)]">Carregando idiomas...</p>
+    } @else if (languages().length === 0) {
+      <p class="mt-10 text-[var(--tf-text-secondary)]">Você ainda não está matriculado em nenhum idioma.</p>
+    } @else {
+      <section class="mt-8 grid gap-4 sm:grid-cols-2">
+        @for (language of languages(); track language.id) {
+          <button
+            type="button"
+            class="relative flex flex-col items-start rounded-2xl border p-6 text-left transition"
+            [ngClass]="selectedLanguageId() === language.id
+              ? 'border-[var(--tf-primary)] bg-[var(--tf-primary-light)]'
+              : 'border-[var(--tf-border)] bg-[var(--tf-surface)] hover:bg-[var(--tf-surface-hover)]'"
+            (click)="selectLanguage(language.id)"
+          >
+            <span
+              class="absolute right-5 top-5 flex h-6 w-6 items-center justify-center rounded-full border"
+              [ngClass]="selectedLanguageId() === language.id
+                ? 'border-[var(--tf-primary)] bg-[var(--tf-primary)] text-[var(--tf-on-primary)]'
+                : 'border-[var(--tf-border)]'"
+            >
+              @if (selectedLanguageId() === language.id) {
+                <mat-icon class="!text-base">check</mat-icon>
+              }
+            </span>
+            <span class="text-3xl">{{ language.flag }}</span>
+            <h2 class="mt-4 text-xl font-bold">{{ language.label }}</h2>
+          </button>
+        }
+      </section>
+
+      <button
+        type="button"
+        class="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--tf-primary)] py-4 text-sm font-semibold text-[var(--tf-on-primary)] transition hover:bg-[var(--tf-primary-hover)] disabled:cursor-not-allowed disabled:opacity-40"
+        [disabled]="!selectedLanguageId()"
+        (click)="confirmSelection()"
+      >
+        Continuar
+        <mat-icon class="!text-xl">arrow_forward</mat-icon>
+      </button>
+    }
+  </div>
+</main>

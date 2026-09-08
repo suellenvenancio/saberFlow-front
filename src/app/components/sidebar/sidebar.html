@@ -1,0 +1,66 @@
+<aside class="flex h-screen w-64 shrink-0 flex-col border-r border-[var(--tf-border)] bg-[var(--tf-surface)] px-4 py-6 text-[var(--tf-text-primary)]">
+  <div class="flex items-center gap-2 px-2">
+    <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--tf-primary)] text-[var(--tf-on-primary)]">
+      <mat-icon class="!text-xl">forum</mat-icon>
+    </div>
+    <span class="text-xl font-bold">SaberFlow</span>
+  </div>
+
+  <nav class="mt-8 flex flex-1 flex-col gap-1">
+    @for (item of navItems; track item.label) {
+      @if (item.route) {
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="bg-[var(--tf-primary-light)] text-[var(--tf-primary)]"
+          class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--tf-text-secondary)] transition hover:bg-[var(--tf-surface-hover)]"
+        >
+          <mat-icon class="!text-xl">{{ item.icon }}</mat-icon>
+          {{ item.label }}
+        </a>
+      } @else {
+        <span class="flex cursor-default items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--tf-text-disabled)]">
+          <mat-icon class="!text-xl">{{ item.icon }}</mat-icon>
+          {{ item.label }}
+        </span>
+      }
+    }
+  </nav>
+
+  <button
+    type="button"
+    class="mb-4 flex items-center gap-3 rounded-lg border border-[var(--tf-border)] px-3 py-2.5 text-sm font-medium transition hover:bg-[var(--tf-surface-hover)]"
+    (click)="themeService.toggleTheme()"
+  >
+    <mat-icon class="!text-xl">{{ themeService.theme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    {{ themeService.theme() === 'dark' ? 'Tema claro' : 'Tema escuro' }}
+  </button>
+
+  @if (userName()) {
+    <div class="relative">
+      <button
+        type="button"
+        class="flex w-full items-center gap-3 rounded-xl border border-[var(--tf-border)] px-3 py-3 text-left transition hover:bg-[var(--tf-surface-hover)]"
+        (click)="toggleUserMenu()"
+      >
+        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--tf-primary-light)] font-bold text-[var(--tf-primary)]">
+          {{ userInitial() }}
+        </div>
+        <span class="flex-1 truncate text-sm font-semibold">{{ userName() }}</span>
+        <mat-icon class="!text-xl text-[var(--tf-text-secondary)]">{{ isUserMenuOpen() ? 'expand_more' : 'expand_less' }}</mat-icon>
+      </button>
+
+      @if (isUserMenuOpen()) {
+        <div class="absolute bottom-full left-0 mb-2 w-full overflow-hidden rounded-xl border border-[var(--tf-border)] bg-[var(--tf-surface)] shadow-lg">
+          <button
+            type="button"
+            class="flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm font-medium text-[var(--tf-error)] transition hover:bg-[var(--tf-surface-hover)]"
+            (click)="logout()"
+          >
+            <mat-icon class="!text-xl">logout</mat-icon>
+            Sair
+          </button>
+        </div>
+      }
+    </div>
+  }
+</aside>

@@ -1,0 +1,76 @@
+/* ==========================================================================
+  SaberFlow Theme
+========================================================================== */
+
+/* 1. Classic */
+:root{
+  --tf-primary:#4F46E5;
+  --tf-primary-hover:#4338CA;
+  --tf-primary-light:#EEF2FF;
+  --tf-secondary:#14B8A6;
+  --tf-secondary-light:#CCFBF1;
+  --tf-accent:#F59E0B;
+  --tf-success:#22C55E;
+  --tf-warning:#F59E0B;
+  --tf-error:#EF4444;
+  --tf-background:#F8FAFC;
+  --tf-surface:#FFFFFF;
+  --tf-surface-hover:#F1F5F9;
+  --tf-border:#E2E8F0;
+  --tf-text-primary:#0F172A;
+  --tf-text-secondary:#475569;
+  --tf-text-disabled:#94A3B8;
+  --tf-on-primary:#FFFFFF;
+  --tf-on-secondary:#FFFFFF;
+  --radius-small:8px;
+  --radius-medium:12px;
+  --radius-large:20px;
+  --radius-card:24px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:0 4px 12px rgba(0,0,0,.08);
+  --shadow-lg:0 12px 24px rgba(0,0,0,.10);
+  --fs-display:56px;
+  --fs-h1:36px;
+  --fs-h2:28px;
+  --fs-h3:22px;
+  --fs-title:18px;
+  --fs-body:16px;
+  --fs-small:14px;
+  --fs-caption:12px;
+}
+
+/* 2. Forest */
+.theme-forest{
+  --tf-primary:#2E7D32;--tf-primary-hover:#1B5E20;--tf-primary-light:#E8F5E9;
+  --tf-secondary:#8D6E63;--tf-secondary-light:#EFEBE9;--tf-accent:#FFB300;
+  --tf-background:#F6F8F3;--tf-surface:#FFF;--tf-surface-hover:#F1F8E9;--tf-border:#DCE5D4;
+  --tf-text-primary:#1B4332;--tf-text-secondary:#496057;--tf-text-disabled:#8A9A8C;
+  --tf-on-primary:#FFF;--tf-on-secondary:#FFF;
+}
+
+/* 3. Ocean */
+.theme-ocean{
+  --tf-primary:#0284C7;--tf-primary-hover:#0369A1;--tf-primary-light:#E0F2FE;
+  --tf-secondary:#06B6D4;--tf-secondary-light:#CFFAFE;--tf-accent:#F59E0B;
+  --tf-background:#F8FCFE;--tf-surface:#FFF;--tf-surface-hover:#EFF8FF;--tf-border:#D6EAF5;
+  --tf-text-primary:#0F172A;--tf-text-secondary:#475569;--tf-text-disabled:#94A3B8;
+  --tf-on-primary:#FFF;--tf-on-secondary:#FFF;
+}
+
+/* 4. Midnight */
+.theme-dark{
+  --tf-primary:#818CF8;--tf-primary-hover:#A5B4FC;--tf-primary-light:#312E81;
+  --tf-secondary:#2DD4BF;--tf-secondary-light:#134E4A;--tf-accent:#FBBF24;
+  --tf-background:#0F172A;--tf-surface:#1E293B;--tf-surface-hover:#334155;--tf-border:#334155;
+  --tf-text-primary:#F8FAFC;--tf-text-secondary:#CBD5E1;--tf-text-disabled:#64748B;
+  --tf-on-primary:#0F172A;--tf-on-secondary:#0F172A;
+}
+
+/* 5. High Contrast */
+.theme-contrast{
+  --tf-primary:#00FF84;--tf-primary-hover:#00E676;--tf-primary-light:#003D20;
+  --tf-secondary:#29B6F6;--tf-secondary-light:#002B40;--tf-accent:#FFD600;
+  --tf-background:#000;--tf-surface:#121212;--tf-surface-hover:#1E1E1E;--tf-border:#FFF;
+  --tf-text-primary:#FFF;--tf-text-secondary:#E0E0E0;--tf-text-disabled:#BDBDBD;
+  --tf-on-primary:#000;--tf-on-secondary:#000;
+}

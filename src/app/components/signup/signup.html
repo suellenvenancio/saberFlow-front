@@ -1,0 +1,125 @@
+<div class="relative min-h-screen overflow-hidden bg-[var(--tf-background)] text-[var(--tf-text-primary)]">
+  <div class="pointer-events-none absolute -left-24 top-0 h-80 w-80 rounded-full bg-[var(--tf-primary)]/15 blur-3xl"></div>
+  <div class="pointer-events-none absolute -right-20 bottom-0 h-96 w-96 rounded-full bg-[var(--tf-secondary)]/20 blur-3xl"></div>
+
+  <div class="relative mx-auto flex min-h-screen max-w-7xl items-center px-6 py-10 lg:px-10">
+    <div class="grid w-full gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+      <section class="rounded-[32px] border border-[var(--tf-border)] bg-[var(--tf-surface)] p-8 shadow-xl md:p-10">
+        <h2 class="text-2xl font-bold">Criar Conta</h2>
+        <p class="mt-2 text-[var(--tf-text-secondary)]">Preencha os dados abaixo para se cadastrar</p>
+
+        <form class="mt-8 space-y-5" [formGroup]="form" (ngSubmit)="submit()">
+          <div>
+            <label class="mb-2 block text-sm font-semibold" for="name">Nome Completo</label>
+            <input
+              id="name"
+              type="text"
+              formControlName="name"
+              class="w-full rounded-2xl border border-[var(--tf-border)] bg-[var(--tf-surface)] px-4 py-3 outline-none transition focus:border-[var(--tf-primary)] focus:ring-2 focus:ring-[var(--tf-primary)]/20"
+              placeholder="Seu nome completo"
+            />
+            @if (form.controls.name.touched && form.controls.name.invalid) {
+              <p class="mt-2 text-sm text-red-400">O nome deve ter pelo menos 3 caracteres.</p>
+            }
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-semibold" for="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              class="w-full rounded-2xl border border-[var(--tf-border)] bg-[var(--tf-surface)] px-4 py-3 outline-none transition focus:border-[var(--tf-primary)] focus:ring-2 focus:ring-[var(--tf-primary)]/20"
+              placeholder="voce@exemplo.com"
+            />
+            @if (form.controls.email.touched && form.controls.email.invalid) {
+              <p class="mt-2 text-sm text-red-400">Informe um email válido.</p>
+            }
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-semibold" for="password">Senha</label>
+            <div class="relative">
+              <input
+                id="password"
+                [type]="showPassword() ? 'text' : 'password'"
+                formControlName="password"
+                class="w-full rounded-2xl border border-[var(--tf-border)] bg-[var(--tf-surface)] px-4 py-3 pr-14 outline-none transition focus:border-[var(--tf-primary)] focus:ring-2 focus:ring-[var(--tf-primary)]/20"
+                placeholder="Sua senha"
+              />
+              <button
+                type="button"
+                (click)="togglePasswordVisibility()"
+                class="absolute inset-y-0 right-3 my-auto flex h-9 w-9 items-center justify-center rounded-xl text-[var(--tf-text-secondary)] hover:bg-[var(--tf-surface-hover)]"
+                aria-label="Alternar visibilidade da senha"
+              >
+                <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+            </div>
+            @if (form.controls.password.touched && form.controls.password.invalid) {
+              <p class="mt-2 text-sm text-red-400">A senha deve ter pelo menos 6 caracteres.</p>
+            }
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-semibold" for="confirmPassword">Confirmar Senha</label>
+            <div class="relative">
+              <input
+                id="confirmPassword"
+                [type]="showConfirmPassword() ? 'text' : 'password'"
+                formControlName="confirmPassword"
+                class="w-full rounded-2xl border border-[var(--tf-border)] bg-[var(--tf-surface)] px-4 py-3 pr-14 outline-none transition focus:border-[var(--tf-primary)] focus:ring-2 focus:ring-[var(--tf-primary)]/20"
+                placeholder="Confirme sua senha"
+              />
+              <button
+                type="button"
+                (click)="toggleConfirmPasswordVisibility()"
+                class="absolute inset-y-0 right-3 my-auto flex h-9 w-9 items-center justify-center rounded-xl text-[var(--tf-text-secondary)] hover:bg-[var(--tf-surface-hover)]"
+                aria-label="Alternar visibilidade da confirmação de senha"
+              >
+                <mat-icon>{{ showConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+            </div>
+            @if (form.controls.confirmPassword.touched && form.controls.confirmPassword.invalid) {
+              <p class="mt-2 text-sm text-red-400">A confirmação de senha deve ter pelo menos 6 caracteres.</p>
+            }
+          </div>
+
+          @if (errorMessage()) {
+            <div class="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+              {{ errorMessage() }}
+            </div>
+          }
+
+          @if (successMessage()) {
+            <div class="rounded-2xl border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-400">
+              {{ successMessage() }}
+            </div>
+          }
+
+          <button
+            type="submit"
+            [disabled]="loading()"
+            class="flex w-full items-center justify-center gap-2 rounded-2xl bg-[var(--tf-primary)] px-4 py-3 text-base font-semibold text-[var(--tf-on-primary)] transition hover:bg-[var(--tf-primary-hover)] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <mat-icon>person_add</mat-icon>
+            {{ loading() ? 'Cadastrando...' : 'Cadastrar' }}
+          </button>
+
+          <div class="mt-6 text-center">
+            <p class="text-sm text-[var(--tf-text-secondary)]">
+              Já tem conta?
+              <button
+                type="button"
+                (click)="navigateToLogin()"
+                class="ml-1 font-semibold text-[var(--tf-primary)] transition hover:text-[var(--tf-primary-hover)] hover:underline"
+              >
+                Faça login
+              </button>
+            </p>
+          </div>
+        </form>
+      </section>
+    </div>
+  </div>
+</div>
