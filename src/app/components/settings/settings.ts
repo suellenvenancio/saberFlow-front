@@ -2,7 +2,7 @@ import { NgClass } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
-import { forkJoin, of, switchMap } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { ActiveLanguageService } from '../../services/active-language.service';
 import { AuthenticationService } from '../../services/authentication.service';
 import { LanguageService } from '../../services/language.service';
@@ -35,6 +35,7 @@ export class SettingsComponent {
   activeLanguageService = inject(ActiveLanguageService);
 
   languages = signal<LanguageOption[]>([]);
+  linkedLanguageIds = signal<string[]>([]);
   selectedLanguageId = signal<string | null>(null);
   loading = signal(true);
 
@@ -51,31 +52,34 @@ export class SettingsComponent {
       return;
     }
 
-    this.userStudyLanguageService
-      .findAll(userId)
-      .pipe(
-        switchMap((studyLanguages) => {
-          if (studyLanguages.length === 0) return of([]);
-          return forkJoin(
-            studyLanguages.map((studyLanguage) =>
-              this.languageService.findById(studyLanguage.languageId),
-            ),
-          );
-        }),
-      )
-      .subscribe({
-        next: (languages) => {
-          const options = languages.map((language) => this.toOption(language));
-          this.languages.set(options);
-          this.selectedLanguageId.set(
-            this.activeLanguageService.activeLanguageId() ??
-              options[0]?.id ??
-              null,
-          );
-          this.loading.set(false);
-        },
-        error: () => this.loading.set(false),
-      });
+    forkJoin({
+      studyLanguages: this.userStudyLanguageService.findAll(userId),
+      allLanguages: this.languageService.findAll(),
+    }).subscribe({
+      next: ({ studyLanguages, allLanguages }) => {
+        const linkedIds = studyLanguages.map(
+          (studyLanguage) => studyLanguage.languageId,
+        );
+        this.linkedLanguageIds.set(linkedIds);
+        this.languages.set(
+          allLanguages.map((language) => this.toOption(language)),
+        );
+
+        const preferredLanguageId =
+          this.activeLanguageService.activeLanguageId() ??
+          linkedIds[0] ??
+          allLanguages[0]?.id ??
+          null;
+
+        this.selectedLanguageId.set(preferredLanguageId);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
+    });
+  }
+
+  isLinked(languageId: string): boolean {
+    return this.linkedLanguageIds().includes(languageId);
   }
 
   selectLanguage(languageId: string): void {
@@ -86,8 +90,37 @@ export class SettingsComponent {
     const languageId = this.selectedLanguageId();
     if (!languageId) return;
 
-    this.activeLanguageService.setActiveLanguageId(languageId);
-    this.router.navigate(['/cards']);
+    const userId = this.authenticationService.getUserId();
+    if (!userId) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    const isLinked = this.isLinked(languageId);
+
+    if (isLinked) {
+      this.activeLanguageService.setActiveLanguageId(languageId);
+      this.router.navigate(['/cards'], {
+        queryParams: { languageId },
+      });
+      return;
+    }
+
+    this.userStudyLanguageService.save({ userId, languageId }).subscribe({
+      next: () => {
+        this.linkedLanguageIds.update((ids) => [...ids, languageId]);
+        this.activeLanguageService.setActiveLanguageId(languageId);
+        this.router.navigate(['/cards'], {
+          queryParams: { languageId },
+        });
+      },
+      error: () => {
+        this.activeLanguageService.setActiveLanguageId(languageId);
+        this.router.navigate(['/cards'], {
+          queryParams: { languageId },
+        });
+      },
+    });
   }
 
   private toOption(language: LanguageResponse): LanguageOption {

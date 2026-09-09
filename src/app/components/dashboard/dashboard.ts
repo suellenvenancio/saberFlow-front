@@ -39,6 +39,17 @@ interface RecentSession {
   cardCount: number;
 }
 
+interface CourseOption {
+  id: string;
+  label: string;
+  flag: string;
+  description: string;
+  icon: string;
+  selected?: boolean;
+  accentClass: string;
+  badgeClass?: string;
+}
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.html',
@@ -73,6 +84,29 @@ export class DashboardComponent {
   });
 
   enrolledLanguages = signal<EnrolledLanguage[]>([]);
+  hasNoStudyLanguages = signal(false);
+  availableCourses = signal<CourseOption[]>([]);
+  selectedCourse = signal<CourseOption | null>(null);
+  courseSearch = signal('');
+  showAllCourses = signal(false);
+  filteredCourses = computed(() => {
+    const query = this.courseSearch().trim().toLowerCase();
+    const courses = !query
+      ? this.availableCourses()
+      : this.availableCourses().filter((course) =>
+          course.label.toLowerCase().includes(query),
+        );
+
+    return courses;
+  });
+  visibleCourses = computed(() => {
+    const courses = this.filteredCourses();
+    if (courses.length <= 6 || this.showAllCourses()) {
+      return courses;
+    }
+
+    return courses.slice(0, 6);
+  });
 
   totalCardsStudied = signal(0);
   totalQuestionsAnswered = signal(0);
@@ -115,9 +149,10 @@ export class DashboardComponent {
         this.allAnswers = answers;
 
         if (studyLanguages.length === 0) {
+          this.hasNoStudyLanguages.set(true);
+          this.loadAvailableCourses();
           this.processSessions(sessions);
           this.processAnswers(answers);
-          this.loading.set(false);
           return;
         }
 
@@ -194,6 +229,47 @@ export class DashboardComponent {
     this.router.navigate(['/cards']);
   }
 
+  continueWithCourse(courseId: string): void {
+    const userId = this.authenticationService.getUserId();
+    if (!userId) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.userStudyLanguageService
+      .save({
+        userId,
+        languageId: courseId,
+      })
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/cards'], {
+            queryParams: { languageId: courseId },
+          });
+        },
+        error: () => {
+          this.router.navigate(['/cards'], {
+            queryParams: { languageId: courseId },
+          });
+        },
+      });
+  }
+
+  onCourseSearch(event: Event): void {
+    const target = event.target as HTMLInputElement | null;
+    this.courseSearch.set(target?.value ?? '');
+  }
+
+  selectCourse(courseId: string): void {
+    const course =
+      this.availableCourses().find((item) => item.id === courseId) ?? null;
+    this.selectedCourse.set(course);
+  }
+
+  toggleShowAllCourses(): void {
+    this.showAllCourses.set(!this.showAllCourses());
+  }
+
   formatSessionDate(startedAt: string): string {
     const date = new Date(startedAt);
     const today = new Date();
@@ -207,6 +283,49 @@ export class DashboardComponent {
       day: '2-digit',
       month: '2-digit',
     });
+  }
+
+  private loadAvailableCourses(): void {
+    this.languageService.findAll().subscribe({
+      next: (languages) => {
+        const courses = languages.map((language) => ({
+          id: language.id,
+          label:
+            LANGUAGE_LABELS[language.language as Language] ?? language.language,
+          flag: getLanguageFlag(language.language),
+          description: this.getCourseDescription(language.language),
+          icon: 'language',
+          accentClass:
+            'bg-[radial-gradient(circle_at_center,#2b2f67_0%,#181d40_60%,#0a1124_100%)] border-[#7c6cf6]',
+        }));
+
+        this.availableCourses.set(courses);
+        this.selectedCourse.set(courses[0] ?? null);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.availableCourses.set([]);
+        this.selectedCourse.set(null);
+        this.loading.set(false);
+      },
+    });
+  }
+
+  private getCourseDescription(language: string): string {
+    const fallback = LANGUAGE_LABELS[language as Language] ?? language;
+
+    const descriptions: Record<string, string> = {
+      Inglês: 'Comunicação para um mundo sem fronteiras.',
+      Italiano: 'Aprenda no seu ritmo e viva novas experiências.',
+      Espanhol: 'Conecte-se com pessoas e culturas diferentes.',
+      Francês: 'Explore expressões e contexto do dia a dia.',
+      Alemão: 'Aprofunde-se em vocabulário e estrutura da língua.',
+      Português: 'Fortaleça o uso do português em contexto real.',
+    };
+
+    return (
+      descriptions[fallback] ?? 'Explore o idioma e comece sua jornada hoje.'
+    );
   }
 
   private processSessions(

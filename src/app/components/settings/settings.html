@@ -3,13 +3,13 @@
 
   <div class="mx-auto max-w-5xl flex-1 px-8 py-10">
     <p class="text-sm text-[var(--tf-text-secondary)]">Configurações</p>
-    <h1 class="mt-1 text-4xl font-bold">Escolha seu curso</h1>
-    <p class="mt-2 text-[var(--tf-text-secondary)]">Escolha o idioma que deseja estudar agora.</p>
+    <h1 class="mt-1 text-4xl font-bold">Escolha seu idioma</h1>
+    <p class="mt-2 text-[var(--tf-text-secondary)]">Selecione o idioma que deseja estudar agora.</p>
 
     @if (loading()) {
       <p class="mt-10 text-[var(--tf-text-secondary)]">Carregando idiomas...</p>
     } @else if (languages().length === 0) {
-      <p class="mt-10 text-[var(--tf-text-secondary)]">Você ainda não está matriculado em nenhum idioma.</p>
+      <p class="mt-10 text-[var(--tf-text-secondary)]">Nenhum idioma disponível no momento.</p>
     } @else {
       <section class="mt-8 grid gap-4 sm:grid-cols-2">
         @for (language of languages(); track language.id) {
@@ -21,18 +21,31 @@
               : 'border-[var(--tf-border)] bg-[var(--tf-surface)] hover:bg-[var(--tf-surface-hover)]'"
             (click)="selectLanguage(language.id)"
           >
-            <span
-              class="absolute right-5 top-5 flex h-6 w-6 items-center justify-center rounded-full border"
-              [ngClass]="selectedLanguageId() === language.id
-                ? 'border-[var(--tf-primary)] bg-[var(--tf-primary)] text-[var(--tf-on-primary)]'
-                : 'border-[var(--tf-border)]'"
-            >
-              @if (selectedLanguageId() === language.id) {
-                <mat-icon class="!text-base">check</mat-icon>
+            @if (!isLinked(language.id)) {
+              <span
+                class="absolute right-5 top-5 flex h-6 w-6 items-center justify-center rounded-full border"
+                [ngClass]="selectedLanguageId() === language.id
+                  ? 'border-[var(--tf-primary)] bg-[var(--tf-primary)] text-[var(--tf-on-primary)]'
+                  : 'border-[var(--tf-border)]'"
+              >
+                @if (selectedLanguageId() === language.id) {
+                  <mat-icon class="!text-base">check</mat-icon>
+                }
+              </span>
+            }
+
+            <div class="flex w-full items-start justify-between gap-3">
+              <div>
+                <span class="text-3xl">{{ language.flag }}</span>
+                <h2 class="mt-4 text-xl font-bold">{{ language.label }}</h2>
+              </div>
+
+              @if (isLinked(language.id)) {
+                <span class="rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-700">
+                  Vinculado
+                </span>
               }
-            </span>
-            <span class="text-3xl">{{ language.flag }}</span>
-            <h2 class="mt-4 text-xl font-bold">{{ language.label }}</h2>
+            </div>
           </button>
         }
       </section>
@@ -43,7 +56,7 @@
         [disabled]="!selectedLanguageId()"
         (click)="confirmSelection()"
       >
-        Continuar
+        {{ isLinked(selectedLanguageId() ?? '') ? 'Salvar e continuar' : 'Selecionar e continuar' }}
         <mat-icon class="!text-xl">arrow_forward</mat-icon>
       </button>
     }

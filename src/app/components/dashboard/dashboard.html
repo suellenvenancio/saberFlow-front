@@ -1,138 +1,208 @@
 <main class="flex min-h-screen bg-[var(--tf-background)] text-[var(--tf-text-primary)]">
-  <app-sidebar />
-
-  <div class="mx-auto max-w-6xl flex-1 px-4 py-6 sm:px-8 sm:py-10">
-    @if (loading()) {
+  @if (loading()) {
+    <div class="flex min-h-screen w-full items-center justify-center">
       <p class="text-[var(--tf-text-secondary)]">Carregando painel...</p>
-    } @else {
-      <header>
-        <h1 class="text-3xl font-bold">Olá, {{ userName() ?? 'estudante' }}! 👋</h1>
-        <p class="mt-1 text-[var(--tf-text-secondary)]">Que bom te ver por aqui. Vamos continuar aprendendo?</p>
-      </header>
+    </div>
+  } @else if (hasNoStudyLanguages()) {
+    <div class="flex min-h-screen w-full">
+      <app-sidebar />
 
-      @if (activeLanguageId()) {
-        <section class="relative mt-8 overflow-hidden rounded-2xl border border-[var(--tf-border)] bg-[var(--tf-primary-light)] p-8">
-          <p class="text-xs font-semibold uppercase tracking-wide text-[var(--tf-primary)]">Continue seu aprendizado</p>
-          <div class="mt-3 flex items-center gap-3">
-            <span class="text-4xl">{{ activeLanguageFlag() }}</span>
-            <h2 class="text-2xl font-bold">{{ activeLanguageLabel() }}</h2>
-          </div>
-
-          <div class="mt-6 max-w-md">
-            <div class="h-2 overflow-hidden rounded-full bg-[var(--tf-border)]">
-              <div class="h-full rounded-full bg-[var(--tf-primary)]" [style.width.%]="activeLanguageProgressPercent()"></div>
-            </div>
-            <p class="mt-2 text-sm text-[var(--tf-text-secondary)]">
-              {{ studiedCardsForActiveLanguage() }} de {{ totalCardsForActiveLanguage() }} cards concluídos · {{ activeLanguageProgressPercent() }}%
+      <div class="flex-1 px-4 py-5 sm:px-8 lg:px-10">
+        <div class="mx-auto mt-8 max-w-5xl">
+          <div class="mb-8 text-center">
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--tf-primary)]">Vamos começar?</p>
+            <h1 class="mt-4 text-4xl font-black tracking-tight sm:text-5xl">Escolha um curso</h1>
+            <p class="mx-auto mt-3 max-w-2xl text-base text-[var(--tf-text-secondary)]">
+              Selecione o curso que você quer estudar e dê o primeiro passo na sua jornada.
             </p>
           </div>
+ 
 
-          <button
-            type="button"
-            class="mt-6 flex items-center gap-2 rounded-xl bg-[var(--tf-primary)] px-5 py-3 text-sm font-semibold text-[var(--tf-on-primary)] transition hover:bg-[var(--tf-primary-hover)]"
-            (click)="continueStudying()"
-          >
-            <mat-icon class="!text-xl">play_circle</mat-icon>
-            Continuar estudando
-          </button>
-        </section>
-      }
-
-      @if (enrolledLanguages().length > 0) {
-        <section class="mt-10">
-          <div class="flex items-center justify-between">
-            <h2 class="text-lg font-bold">Escolha o que estudar hoje</h2>
-          </div>
-
-          <div class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-            @for (language of enrolledLanguages(); track language.id) {
+          <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            @for (course of visibleCourses(); track course.id) {
               <button
                 type="button"
-                class="flex flex-col items-start gap-2 rounded-2xl border p-4 text-left transition"
-                [ngClass]="language.id === activeLanguageId()
-                  ? 'border-[var(--tf-primary)] bg-[var(--tf-primary-light)]'
-                  : 'border-[var(--tf-border)] bg-[var(--tf-surface)] hover:bg-[var(--tf-surface-hover)]'"
-                (click)="selectLanguage(language.id)"
+                class="group rounded-[26px] border p-5 text-left transition-all duration-200"
+                [ngClass]="selectedCourse()?.id === course.id
+                  ? 'border-[var(--tf-primary)] bg-[var(--tf-primary-light)] shadow-lg'
+                  : 'border-[var(--tf-border)] bg-[var(--tf-surface)] hover:border-[var(--tf-primary)]/80'"
+                (click)="selectCourse(course.id)"
               >
-                <span class="text-2xl">{{ language.flag }}</span>
-                <span class="font-semibold">{{ language.label }}</span>
-                <span class="flex items-center gap-1 text-xs text-[var(--tf-text-secondary)]">
-                  {{ language.topicCount }} temas
-                  <mat-icon class="!text-sm">chevron_right</mat-icon>
-                </span>
+                <div class="flex justify-center">
+                  <div
+                    class="flex h-24 w-24 items-center justify-center rounded-full border-4 text-4xl shadow-inner"
+                    [ngClass]="selectedCourse()?.id === course.id ? 'border-[var(--tf-primary)]' : 'border-[var(--tf-border)]'"
+                    [class]="course.accentClass"
+                  >
+                    {{ course.flag }}
+                  </div>
+                </div>
+
+                <div class="mt-6 text-center">
+                  <h2 class="text-2xl font-bold">{{ course.label }}</h2>
+                  <p class="mt-2 text-sm leading-6 text-[var(--tf-text-secondary)]">
+                    {{ course.description }}
+                  </p>
+                </div>
               </button>
             }
           </div>
-        </section>
-      }
 
-      <section class="mt-10 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <article class="rounded-2xl border border-[var(--tf-border)] bg-[var(--tf-surface)] p-6">
-          <h2 class="text-lg font-bold">Seu progresso</h2>
-
-          <div class="mt-4 grid grid-cols-2 gap-4">
-            <div class="flex items-center gap-3">
-              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--tf-primary-light)] text-[var(--tf-primary)]">
-                <mat-icon class="!text-xl">style</mat-icon>
-              </div>
-              <div>
-                <p class="text-lg font-bold">{{ totalCardsStudied() }}</p>
-                <p class="text-xs text-[var(--tf-text-secondary)]">cards estudados</p>
-              </div>
+          @if (filteredCourses().length > 6) {
+            <div class="mt-8 flex justify-center">
+              <button
+                type="button"
+                class="rounded-xl border border-[var(--tf-border)] bg-[var(--tf-surface)] px-5 py-3 text-sm font-semibold text-[var(--tf-text-primary)] transition hover:bg-[var(--tf-surface-hover)]"
+                (click)="toggleShowAllCourses()"
+              >
+                {{ showAllCourses() ? 'Ver menos' : 'Ver mais' }}
+              </button>
             </div>
-
-            <div class="flex items-center gap-3">
-              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--tf-primary-light)] text-[var(--tf-primary)]">
-                <mat-icon class="!text-xl">quiz</mat-icon>
-              </div>
-              <div>
-                <p class="text-lg font-bold">{{ totalQuestionsAnswered() }}</p>
-                <p class="text-xs text-[var(--tf-text-secondary)]">questões respondidas</p>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-3">
-              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">
-                <mat-icon class="!text-xl">local_fire_department</mat-icon>
-              </div>
-              <div>
-                <p class="text-lg font-bold">{{ studyStreakDays() }}</p>
-                <p class="text-xs text-[var(--tf-text-secondary)]">dias seguidos</p>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-3">
-              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--tf-primary-light)] text-[var(--tf-primary)]">
-                <mat-icon class="!text-xl">track_changes</mat-icon>
-              </div>
-              <div>
-                <p class="text-lg font-bold">{{ accuracyPercent() !== null ? accuracyPercent() + '%' : '—' }}</p>
-                <p class="text-xs text-[var(--tf-text-secondary)]">taxa de acertos</p>
-              </div>
-            </div>
-          </div>
-        </article>
-
-        <article class="rounded-2xl border border-[var(--tf-border)] bg-[var(--tf-surface)] p-6">
-          <h2 class="text-lg font-bold">Últimas sessões</h2>
-
-          @if (recentSessions().length === 0) {
-            <p class="mt-4 text-sm text-[var(--tf-text-secondary)]">Você ainda não tem sessões de estudo registradas.</p>
-          } @else {
-            <ul class="mt-4 space-y-3">
-              @for (session of recentSessions(); track session.id) {
-                <li class="flex items-center justify-between rounded-xl border border-[var(--tf-border)] px-4 py-3">
-                  <div>
-                    <p class="text-sm font-semibold">{{ formatSessionDate(session.startedAt) }}</p>
-                    <p class="text-xs text-[var(--tf-text-secondary)]">{{ session.cardCount }} cards estudados</p>
-                  </div>
-                  <mat-icon class="text-[var(--tf-text-secondary)]">chevron_right</mat-icon>
-                </li>
-              }
-            </ul>
           }
-        </article>
-      </section>
-    }
-  </div>
+
+          <div class="mt-8 rounded-2xl bg-[var(--tf-primary)] px-6 py-5 text-center text-lg font-bold text-[var(--tf-on-primary)] shadow-lg shadow-[var(--tf-primary)]/20">
+            <button type="button" class="flex w-full items-center justify-center gap-3" (click)="selectedCourse() ? continueWithCourse(selectedCourse()!.id) : null">
+              <span>Confirmar</span>
+              <mat-icon class="!text-xl">arrow_forward</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <main class="flex min-h-screen bg-[var(--tf-background)] text-[var(--tf-text-primary)]">
+      <app-sidebar />
+
+      <div class="mx-auto max-w-6xl flex-1 px-4 py-6 sm:px-8 sm:py-10">
+        <header>
+          <h1 class="text-3xl font-bold">Olá, {{ userName() ?? 'estudante' }}! 👋</h1>
+          <p class="mt-1 text-[var(--tf-text-secondary)]">Que bom te ver por aqui. Vamos continuar aprendendo?</p>
+        </header>
+
+        @if (activeLanguageId()) {
+          <section class="relative mt-8 overflow-hidden rounded-2xl border border-[var(--tf-border)] bg-[var(--tf-primary-light)] p-8">
+            <p class="text-xs font-semibold uppercase tracking-wide text-[var(--tf-primary)]">Continue seu aprendizado</p>
+            <div class="mt-3 flex items-center gap-3">
+              <span class="text-4xl">{{ activeLanguageFlag() }}</span>
+              <h2 class="text-2xl font-bold">{{ activeLanguageLabel() }}</h2>
+            </div>
+
+            <div class="mt-6 max-w-md">
+              <div class="h-2 overflow-hidden rounded-full bg-[var(--tf-border)]">
+                <div class="h-full rounded-full bg-[var(--tf-primary)]" [style.width.%]="activeLanguageProgressPercent()"></div>
+              </div>
+              <p class="mt-2 text-sm text-[var(--tf-text-secondary)]">
+                {{ studiedCardsForActiveLanguage() }} de {{ totalCardsForActiveLanguage() }} cards concluídos · {{ activeLanguageProgressPercent() }}%
+              </p>
+            </div>
+
+            <button
+              type="button"
+              class="mt-6 flex items-center gap-2 rounded-xl bg-[var(--tf-primary)] px-5 py-3 text-sm font-semibold text-[var(--tf-on-primary)] transition hover:bg-[var(--tf-primary-hover)]"
+              (click)="continueStudying()"
+            >
+              <mat-icon class="!text-xl">play_circle</mat-icon>
+              Continuar estudando
+            </button>
+          </section>
+        }
+
+        @if (enrolledLanguages().length > 0) {
+          <section class="mt-10">
+            <div class="flex items-center justify-between">
+              <h2 class="text-lg font-bold">Escolha o que estudar hoje</h2>
+            </div>
+
+            <div class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+              @for (language of enrolledLanguages(); track language.id) {
+                <button
+                  type="button"
+                  class="flex flex-col items-start gap-2 rounded-2xl border p-4 text-left transition"
+                  [ngClass]="language.id === activeLanguageId()
+                    ? 'border-[var(--tf-primary)] bg-[var(--tf-primary-light)]'
+                    : 'border-[var(--tf-border)] bg-[var(--tf-surface)] hover:bg-[var(--tf-surface-hover)]'"
+                  (click)="selectLanguage(language.id)"
+                >
+                  <span class="text-2xl">{{ language.flag }}</span>
+                  <span class="font-semibold">{{ language.label }}</span>
+                  <span class="flex items-center gap-1 text-xs text-[var(--tf-text-secondary)]">
+                    {{ language.topicCount }} temas
+                    <mat-icon class="!text-sm">chevron_right</mat-icon>
+                  </span>
+                </button>
+              }
+            </div>
+          </section>
+        }
+
+        <section class="mt-10 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <article class="rounded-2xl border border-[var(--tf-border)] bg-[var(--tf-surface)] p-6">
+            <h2 class="text-lg font-bold">Seu progresso</h2>
+
+            <div class="mt-4 grid grid-cols-2 gap-4">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--tf-primary-light)] text-[var(--tf-primary)]">
+                  <mat-icon class="!text-xl">style</mat-icon>
+                </div>
+                <div>
+                  <p class="text-lg font-bold">{{ totalCardsStudied() }}</p>
+                  <p class="text-xs text-[var(--tf-text-secondary)]">cards estudados</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--tf-primary-light)] text-[var(--tf-primary)]">
+                  <mat-icon class="!text-xl">quiz</mat-icon>
+                </div>
+                <div>
+                  <p class="text-lg font-bold">{{ totalQuestionsAnswered() }}</p>
+                  <p class="text-xs text-[var(--tf-text-secondary)]">questões respondidas</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">
+                  <mat-icon class="!text-xl">local_fire_department</mat-icon>
+                </div>
+                <div>
+                  <p class="text-lg font-bold">{{ studyStreakDays() }}</p>
+                  <p class="text-xs text-[var(--tf-text-secondary)]">dias seguidos</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--tf-primary-light)] text-[var(--tf-primary)]">
+                  <mat-icon class="!text-xl">track_changes</mat-icon>
+                </div>
+                <div>
+                  <p class="text-lg font-bold">{{ accuracyPercent() !== null ? accuracyPercent() + '%' : '—' }}</p>
+                  <p class="text-xs text-[var(--tf-text-secondary)]">taxa de acertos</p>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="rounded-2xl border border-[var(--tf-border)] bg-[var(--tf-surface)] p-6">
+            <h2 class="text-lg font-bold">Últimas sessões</h2>
+
+            @if (recentSessions().length === 0) {
+              <p class="mt-4 text-sm text-[var(--tf-text-secondary)]">Você ainda não tem sessões de estudo registradas.</p>
+            } @else {
+              <ul class="mt-4 space-y-3">
+                @for (session of recentSessions(); track session.id) {
+                  <li class="flex items-center justify-between rounded-xl border border-[var(--tf-border)] px-4 py-3">
+                    <div>
+                      <p class="text-sm font-semibold">{{ formatSessionDate(session.startedAt) }}</p>
+                      <p class="text-xs text-[var(--tf-text-secondary)]">{{ session.cardCount }} cards estudados</p>
+                    </div>
+                    <mat-icon class="text-[var(--tf-text-secondary)]">chevron_right</mat-icon>
+                  </li>
+                }
+              </ul>
+            }
+          </article>
+        </section>
+      </div>
+    </main>
+  }
 </main>
