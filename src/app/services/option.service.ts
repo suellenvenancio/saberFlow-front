@@ -1,11 +1,12 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { OptionRequest, OptionResponse } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class OptionService {
-  private readonly url = 'https://saberflow-api.onrender.com/api/options';
+  private readonly url = `${environment.apiUrl}/api/options`;
 
   constructor(private http: HttpClient) {}
 

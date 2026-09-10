@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { CardRequest, CardResponse, Level } from './models';
 
 export interface CardFilter {
@@ -12,7 +13,7 @@ export interface CardFilter {
 
 @Injectable({ providedIn: 'root' })
 export class CardService {
-  private readonly url = 'https://saberflow-api.onrender.com/api/cards';
+  private readonly url = `${environment.apiUrl}/api/cards`;
 
   constructor(private http: HttpClient) {}
 

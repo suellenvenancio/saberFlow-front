@@ -1,12 +1,12 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { UserStudyLanguageRequest, UserStudyLanguageResponse } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class UserStudyLanguageService {
-  private readonly url =
-    'https://saberflow-api.onrender.com/api/user-study-languages';
+  private readonly url = `${environment.apiUrl}/api/user-study-languages`;
 
   constructor(private http: HttpClient) {}
 

@@ -1,12 +1,12 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { StudySessionRequest, StudySessionResponse } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class StudySessionService {
-  private readonly url =
-    'https://saberflow-api.onrender.com/api/study-sessions';
+  private readonly url = `${environment.apiUrl}/api/study-sessions`;
 
   constructor(private http: HttpClient) {}
 

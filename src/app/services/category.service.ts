@@ -1,11 +1,12 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { CategoryRequest, CategoryResponse } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
-  private readonly url = 'https://saberflow-api.onrender.com/api/categories';
+  private readonly url = `${environment.apiUrl}/api/categories`;
 
   constructor(private http: HttpClient) {}
 

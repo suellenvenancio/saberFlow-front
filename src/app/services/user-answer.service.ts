@@ -1,11 +1,12 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { UserAnswerRequest, UserAnswerResponse } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class UserAnswerService {
-  private readonly url = 'https://saberflow-api.onrender.com/api/user-answers';
+  private readonly url = `${environment.apiUrl}/api/user-answers`;
 
   constructor(private http: HttpClient) {}
 

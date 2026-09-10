@@ -1,11 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { LoginRequest, TokenResponse } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
-  private readonly url = 'https://saberflow-api.onrender.com/api/auth';
+  private readonly url = `${environment.apiUrl}/api/auth`;
   private readonly tokenKey = 'saberflow.token';
   private readonly userIdKey = 'saberflow.userId';
 
