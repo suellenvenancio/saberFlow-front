@@ -297,7 +297,7 @@ export class QuestionsComponent {
               name: 'Todos os temas',
               questionCount: totalQuestions,
             },
-            ...topics,
+            ...topics.filter((topic) => topic.questionCount > 0),
           ]);
           this.setupLoading.set(false);
         },
@@ -447,14 +447,15 @@ export class QuestionsComponent {
       });
   }
 
-  private registerAnsweredQuestion(status: StudySessionRequest['status']): void {
+  private registerAnsweredQuestion(
+    status: StudySessionRequest['status'],
+  ): void {
     const question = this.currentQuestion();
     if (!question) return;
 
     this.answeredQuestionIds.push(question.id);
     this.pendingSessionStatus = status;
-    this.sessionEndedAt =
-      status === 'ACTIVE' ? null : new Date().toISOString();
+    this.sessionEndedAt = status === 'ACTIVE' ? null : new Date().toISOString();
     this.syncStudySession(status, this.sessionEndedAt);
   }
 

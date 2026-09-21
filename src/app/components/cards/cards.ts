@@ -303,7 +303,7 @@ export class CardsComponent {
               name: 'Todos os temas',
               cardCount: totalCards,
             },
-            ...topics,
+            ...topics.filter((t) => t.cardCount > 0),
           ]);
           this.setupLoading.set(false);
         },
