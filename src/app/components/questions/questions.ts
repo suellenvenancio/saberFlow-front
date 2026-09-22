@@ -237,6 +237,7 @@ export class QuestionsComponent {
     this.selectedCategoryId.set(topic.id);
     this.selectedCategoryName.set(topic.id ? topic.name : null);
     this.step.set('INTENSITY');
+    this.loadAvailableCount();
   }
 
   selectIntensity(optionId: IntensityId): void {
@@ -267,13 +268,18 @@ export class QuestionsComponent {
 
           return forkJoin(
             categories.map((category) =>
-              forkJoin([this.questionService.findAll(category.id)]).pipe(
-                map(([questions]) => ({
-                  id: category.id,
-                  name: category.name,
-                  questionCount: questions.length,
-                })),
-              ),
+              this.questionService
+                .findByFilter({
+                  categoryIds: [category.id],
+                  languageId,
+                })
+                .pipe(
+                  map((questions) => ({
+                    id: category.id,
+                    name: category.name,
+                    questionCount: questions.length,
+                  })),
+                ),
             ),
           );
         }),
@@ -308,41 +314,69 @@ export class QuestionsComponent {
       });
   }
 
+  private loadAvailableCount(): void {
+    const languageId = this.languageId;
+    if (!languageId) return;
+
+    this.setupLoading.set(true);
+    const categoryId = this.selectedCategoryId();
+    const maxQuestionCount = Math.max(
+      ...INTENSITY_DEFINITIONS.map((definition) => definition.targetAmount),
+      0,
+    );
+
+    this.questionService
+      .findByFilter({
+        languageId,
+        categoryIds: categoryId ? [categoryId] : undefined,
+        size: maxQuestionCount,
+      })
+      .subscribe({
+        next: (questions) => {
+          this.availableCount.set(questions.length);
+          this.setupLoading.set(false);
+        },
+        error: () => {
+          this.setupError.set(true);
+          this.setupLoading.set(false);
+        },
+      });
+  }
+
   private startSession(amount: number | null): void {
     const languageId = this.languageId;
     if (!languageId) return;
 
     this.loading.set(true);
     const categoryId = this.selectedCategoryId();
+    const maxQuestionCount = Math.max(
+      ...INTENSITY_DEFINITIONS.map((definition) => definition.targetAmount),
+      0,
+    );
 
-    (categoryId
-      ? this.questionService.findAll(categoryId)
-      : this.questionService
-          .findAll()
-          .pipe(
-            map((questions) =>
-              questions.filter(
-                (question) => question.category.language.id === languageId,
-              ),
-            ),
-          )
-    ).subscribe({
-      next: (questions) => {
-        this.questions.set(amount ? questions.slice(0, amount) : questions);
-        this.currentIndex.set(0);
-        this.resetAnswer();
-        this.sessionStartedAt = new Date().toISOString();
-        this.loading.set(false);
-        this.step.set('SESSION');
-        this.createStudySession();
-      },
-      error: () => {
-        this.questions.set([]);
-        this.error.set(true);
-        this.loading.set(false);
-        this.step.set('SESSION');
-      },
-    });
+    this.questionService
+      .findByFilter({
+        languageId,
+        categoryIds: categoryId ? [categoryId] : undefined,
+        size: maxQuestionCount,
+      })
+      .subscribe({
+        next: (questions) => {
+          this.questions.set(amount ? questions.slice(0, amount) : questions);
+          this.currentIndex.set(0);
+          this.resetAnswer();
+          this.sessionStartedAt = new Date().toISOString();
+          this.loading.set(false);
+          this.step.set('SESSION');
+          this.createStudySession();
+        },
+        error: () => {
+          this.questions.set([]);
+          this.error.set(true);
+          this.loading.set(false);
+          this.step.set('SESSION');
+        },
+      });
   }
 
   selectOption(optionId: string): void {
