@@ -269,7 +269,7 @@ export class QuestionsComponent {
           return forkJoin(
             categories.map((category) =>
               this.questionService
-                .findByFilter({
+                .findAll({
                   categoryIds: [category.id],
                   languageId,
                 })
@@ -326,7 +326,7 @@ export class QuestionsComponent {
     );
 
     this.questionService
-      .findByFilter({
+      .findAll({
         languageId,
         categoryIds: categoryId ? [categoryId] : undefined,
         size: maxQuestionCount,
@@ -355,7 +355,7 @@ export class QuestionsComponent {
     );
 
     this.questionService
-      .findByFilter({
+      .findAll({
         languageId,
         categoryIds: categoryId ? [categoryId] : undefined,
         size: maxQuestionCount,

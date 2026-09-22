@@ -179,7 +179,10 @@ export class DashboardComponent {
                     })
                   : forkJoin(
                       topics.map((topic) =>
-                        this.questionService.findAll(topic.id),
+                        this.questionService.findAll({
+                          categoryIds: [topic.id],
+                          languageId: studyLanguage.languageId,
+                        }),
                       ),
                     ).pipe(
                       map((questionLists) => ({

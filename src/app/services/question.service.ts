@@ -16,21 +16,23 @@ export class QuestionService {
 
   constructor(private http: HttpClient) {}
 
-  findByFilter(filter?: QuestionFilter): Observable<QuestionResponse[]> {
+  findAll(filter?: QuestionFilter): Observable<QuestionResponse[]> {
     let params = new HttpParams();
-    if (filter?.categoryIds)
+    if (filter?.categoryIds) {
       params = params.set('categoryIds', filter.categoryIds.join(','));
-    if (filter?.languageId)
+    }
+    if (filter?.languageId) {
       params = params.set('languageId', filter.languageId);
-    if (filter?.size) params = params.set('size', filter.size);
+    }
+    if (filter?.size) {
+      params = params.set('size', filter.size);
+    }
+
     return this.http.get<QuestionResponse[]>(this.url, { params });
   }
 
-  findAll(categoryId?: string): Observable<QuestionResponse[]> {
-    const params = categoryId
-      ? new HttpParams().set('categoryIds', categoryId)
-      : undefined;
-    return this.http.get<QuestionResponse[]>(this.url, { params });
+  findByFilter(filter?: QuestionFilter): Observable<QuestionResponse[]> {
+    return this.findAll(filter);
   }
 
   findById(id: string): Observable<QuestionResponse> {
