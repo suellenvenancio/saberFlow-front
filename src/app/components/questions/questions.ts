@@ -272,6 +272,7 @@ export class QuestionsComponent {
                 .findAll({
                   categoryIds: [category.id],
                   languageId,
+                  size: 20,
                 })
                 .pipe(
                   map((questions) => ({

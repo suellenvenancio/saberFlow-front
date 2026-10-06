@@ -7,7 +7,7 @@ import { QuestionRequest, QuestionResponse } from './models';
 export interface QuestionFilter {
   categoryIds?: string[];
   languageId?: string;
-  size?: number;
+  size: number;
 }
 
 @Injectable({ providedIn: 'root' })

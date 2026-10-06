@@ -182,6 +182,7 @@ export class DashboardComponent {
                         this.questionService.findAll({
                           categoryIds: [topic.id],
                           languageId: studyLanguage.languageId,
+                          size: 20,
                         }),
                       ),
                     ).pipe(
